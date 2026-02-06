@@ -1,0 +1,16 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background-color: #fafafa;
+  transition: background-color 0.5s ease;
+  touch-action: manipulation;
+}
+
+#emoji {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18rem;
+  user-select: none;
+}
