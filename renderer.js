@@ -1,60 +1,74 @@
-const colors = [
-  { name: "Red", color: "#ff6b6b", emoji: "🍎" },
-  { name: "Blue", color: "#74c0fc", emoji: "🫐" },
-  { name: "Yellow", color: "#ffd43b", emoji: "🌼" },
-  { name: "Green", color: "#69db7c", emoji: "🐢" },
-  { name: "Orange", color: "#ffa94d", emoji: "🍊" },
-  { name: "Purple", color: "#b197fc", emoji: "🍇" },
-  { name: "Pink", color: "#faa2c1", emoji: "🌸" },
-  { name: "Brown", color: "#d2b48c", emoji: "🧸" }
+const modes = {
+  COLOR_ONLY: "color",
+  SHAPE_ONLY: "shape",
+  BOTH: "both"
+};
+
+let mode = modes.BOTH;
+
+const items = [
+  { colorName: "Red", color: "#ff6b6b", shape: "●" },
+  { colorName: "Blue", color: "#74c0fc", shape: "■" },
+  { colorName: "Yellow", color: "#ffd43b", shape: "▲" },
+  { colorName: "Green", color: "#69db7c", shape: "◆" },
+  { colorName: "Orange", color: "#ffa94d", shape: "●" },
+  { colorName: "Purple", color: "#b197fc", shape: "■" },
+  { colorName: "Pink", color: "#faa2c1", shape: "▲" },
+  { colorName: "Brown", color: "#d2b48c", shape: "◆" }
 ];
 
 let index = 0;
-
 const emojiEl = document.getElementById("emoji");
 
-function showColor() {
-  const c = colors[index];
-  emojiEl.textContent = c.emoji;
-  document.body.style.backgroundColor = c.color;
+function showItem() {
+  const item = items[index];
+
+  emojiEl.textContent = item.shape;
+
+  if (mode === modes.COLOR_ONLY) {
+    emojiEl.style.color = item.color;
+    document.body.style.backgroundColor = "#fafafa";
+  }
+
+  if (mode === modes.SHAPE_ONLY) {
+    emojiEl.style.color = "#555";
+    document.body.style.backgroundColor = "#fafafa";
+  }
+
+  if (mode === modes.BOTH) {
+    emojiEl.style.color = item.color;
+    document.body.style.backgroundColor = "#fafafa";
+  }
 }
 
-function speakColor() {
-  window.say(colors[index].name);
+function speak() {
+  if (mode !== modes.SHAPE_ONLY) {
+    window.say(items[index].colorName);
+  }
 }
-
-showColor();
-
-// Tap / click → hear color
-document.body.addEventListener("click", speakColor);
-
-// Swipe support
-let startX = null;
-
-document.body.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
-
-document.body.addEventListener("touchend", e => {
-  if (!startX) return;
-  const endX = e.changedTouches[0].clientX;
-  if (endX - startX > 50) prev();
-  if (startX - endX > 50) next();
-  startX = null;
-});
-
-// Keyboard (parent use)
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight") next();
-  if (e.key === "ArrowLeft") prev();
-});
 
 function next() {
-  index = (index + 1) % colors.length;
-  showColor();
+  index = (index + 1) % items.length;
+  showItem();
 }
 
 function prev() {
-  index = (index - 1 + colors.length) % colors.length;
-  showColor();
+  index = (index - 1 + items.length) % items.length;
+  showItem();
 }
+
+document.body.addEventListener("click", speak);
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") prev();
+
+  // Parent-only mode switches
+  if (e.metaKey && e.key === "1") mode = modes.COLOR_ONLY;
+  if (e.metaKey && e.key === "2") mode = modes.SHAPE_ONLY;
+  if (e.metaKey && e.key === "3") mode = modes.BOTH;
+
+  showItem();
+});
+
+showItem();
